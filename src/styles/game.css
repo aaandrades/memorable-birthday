@@ -1,0 +1,172 @@
+/* ===== CSS custom properties ===== */
+:root {
+  --cream:      #F5EFE0;
+  --linen:      #EDE4D0;
+  --rose-light: #E8C4C4;
+  --rose-mid:   #C9959A;
+  --rose-deep:  #8B5A6A;
+  --brown-warm: #6B4226;
+  --sage:       #8FA882;
+  --sage-light: #D4E5C8;
+  --mauve-dark: #5C3040;
+
+  --shadow-warm: 0 4px 24px rgba(139, 90, 106, 0.15);
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans:  'Lato', system-ui, sans-serif;
+}
+
+/* ===== Linen-grain texture (SVG data-URI noise) ===== */
+body {
+  background-color: var(--cream);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  font-family: var(--font-sans);
+  color: var(--brown-warm);
+  min-height: 100vh;
+}
+
+/* ===== Keyframe animations ===== */
+
+/* Botanical float-in from left */
+@keyframes floatInLeft {
+  from { opacity: 0; transform: translateX(-120px) rotate(-15deg); }
+  to   { opacity: 1; transform: translateX(0)      rotate(0deg);   }
+}
+
+/* Botanical float-in from right */
+@keyframes floatInRight {
+  from { opacity: 0; transform: translateX(120px) rotate(15deg); }
+  to   { opacity: 1; transform: translateX(0)     rotate(0deg);  }
+}
+
+/* Botanical float-in from bottom */
+@keyframes floatInUp {
+  from { opacity: 0; transform: translateY(80px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
+/* Question card entrance */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Answer reveal */
+@keyframes scaleReveal {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1);   }
+}
+
+/* Polaroid bounce */
+@keyframes bounce {
+  0%,  100% { transform: translateY(0)    rotate(-1deg); }
+  50%        { transform: translateY(-18px) rotate(1deg);  }
+}
+
+/* Hint slide-down with spring overshoot */
+@keyframes hintSlide {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: translateY(0);     }
+}
+
+/* Scoreboard bar grow */
+@keyframes barGrow {
+  from { width: 0; }
+}
+
+/* Floating +100 score pop */
+@keyframes scorePop {
+  0%   { opacity: 1; transform: translateY(0)     scale(1);    }
+  80%  { opacity: 1; transform: translateY(-48px) scale(1.15); }
+  100% { opacity: 0; transform: translateY(-72px) scale(0.9);  }
+}
+
+/* Button pulse */
+@keyframes pulseSage {
+  0%, 100% { background-color: inherit; }
+  40%       { background-color: var(--sage-light); }
+}
+
+/* Splash title pulse */
+@keyframes gentlePulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.9; transform: scale(1.02); }
+}
+
+/* Petal fall (confetti alternative) */
+@keyframes petalFall {
+  0%   { transform: translateY(-10vh) rotate(0deg)   translateX(0);     opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg) translateX(60px);  opacity: 0; }
+}
+
+/* ===== Utility classes ===== */
+
+.font-serif { font-family: var(--font-serif); }
+.font-sans  { font-family: var(--font-sans);  }
+
+/* Torn-paper card via clip-path */
+.card-torn {
+  clip-path: polygon(
+    0% 2%,   1% 0%,   3% 1.5%, 6% 0.5%, 9% 2%,
+    12% 0.8%, 16% 2%,  20% 0.5%, 25% 1.8%, 30% 0.3%,
+    35% 1.5%, 40% 0%,  45% 1.5%, 50% 0.2%, 55% 1.8%,
+    60% 0.5%, 65% 1.5%, 70% 0.2%, 75% 2%,  80% 0.5%,
+    85% 1.5%, 90% 0.2%, 95% 1.8%, 98% 0.5%, 100% 2%,
+    99% 30%,  100% 50%, 99% 70%,  100% 85%, 99% 100%,
+    97% 98.5%, 92% 100%, 88% 98.5%, 83% 100%, 77% 98.5%,
+    70% 100%, 64% 98.5%, 57% 100%, 50% 98.5%, 43% 100%,
+    36% 98.5%, 29% 100%, 22% 98.5%, 15% 100%, 9% 98.5%,
+    3% 100%, 0% 98.5%,
+    1% 70%,  0% 50%,  1% 30%
+  );
+}
+
+/* Warm shadow shorthand */
+.shadow-warm { box-shadow: var(--shadow-warm); }
+
+/* Slide-up entrance */
+.animate-slide-up {
+  animation: slideUpFade 0.45s ease both;
+}
+
+/* Answer scale reveal */
+.animate-scale-reveal {
+  animation: scaleReveal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Bouncing polaroid */
+.animate-bounce-polaroid {
+  animation: bounce 2.2s ease-in-out infinite;
+}
+
+/* Hint spring-slide */
+.animate-hint {
+  animation: hintSlide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Score pop element */
+.score-pop {
+  position: absolute;
+  pointer-events: none;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sage);
+  animation: scorePop 1s ease forwards;
+  white-space: nowrap;
+}
+
+/* Scoreboard bar */
+.scoreboard-bar {
+  animation: barGrow 0.8s ease both;
+}
+
+/* ===== reduced-motion overrides ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
