@@ -25,7 +25,7 @@ export const ALL_QUESTIONS: Question[] = [
     imageAlt: "Photo for question 1",
     question: "Cuando viajo a México la cumpleañera tuvo un incidente que no le permitió disfrutar al 100% del viaje. ¿Cuál fue el incidente?",
     answer: "La pico una medusa",
-    hint: "Fue un incidente inesperado durante el viaje.",
+    hint: "La cerveza XX fue indispensable",
   },
   {
     id: 2,
@@ -149,7 +149,7 @@ export const ALL_QUESTIONS: Question[] = [
   },
   {
     id: 20,
-    question: "¿Qué animal fue el primer mamífero clonado en el año en que naciste?",
+    question: "¿Qué animal fue el primer mamífero clonado en el año 1996?",
     answer: "La oveja Dolly",
     hint: "Fue un hito en la historia de la biología.",
   },

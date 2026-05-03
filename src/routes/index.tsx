@@ -52,10 +52,22 @@ function TriviaGame() {
     };
   }, []);
 
+  // Preload the next question's image so it's ready before the MC advances
+  useEffect(() => {
+    if (questionOrder.length === 0) return;
+    const nextIdx = currentIndex + 1;
+    if (nextIdx >= ALL_QUESTIONS.length) return;
+    const nextQ = ALL_QUESTIONS[questionOrder[nextIdx]];
+    if (nextQ?.imageSrc) {
+      const img = new Image();
+      img.src = nextQ.imageSrc;
+    }
+  }, [currentIndex, questionOrder]);
+
   const startHintTimer = useCallback(() => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     setShowHint(false);
-    hintTimerRef.current = setTimeout(() => setShowHint(true), 5_000);
+    hintTimerRef.current = setTimeout(() => setShowHint(true), 10_000);
   }, []);
 
   const handleStartGame = useCallback(() => {

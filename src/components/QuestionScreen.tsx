@@ -153,6 +153,8 @@ export function QuestionScreen({
             <img
               src={question.imageSrc}
               alt={question.imageAlt ?? ''}
+              loading="eager"
+              fetchPriority="high"
               style={{ width: '100%', display: 'block', objectFit: 'cover', aspectRatio: '1/1' }}
             />
           </div>
@@ -184,6 +186,7 @@ export function QuestionScreen({
       {/* Reveal button */}
       <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
         <button
+          type="button"
           onClick={onReveal}
           style={{
             padding: '1rem 3rem',
