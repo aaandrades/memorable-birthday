@@ -149,7 +149,7 @@ export const ALL_QUESTIONS: Question[] = [
   },
   {
     id: 20,
-    question: "¿Qué famoso animal fue el primer mamífero clonado en el año en que naciste?",
+    question: "¿Qué animal fue el primer mamífero clonado en el año en que naciste?",
     answer: "La oveja Dolly",
     hint: "Fue un hito en la historia de la biología.",
   },
