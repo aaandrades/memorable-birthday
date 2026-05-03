@@ -176,7 +176,7 @@ export function QuestionScreen({
               fontStyle: 'italic',
             }}
           >
-            💡 Hint: {question.hint}
+            💡 {question.hint}
           </div>
         )}
       </div>

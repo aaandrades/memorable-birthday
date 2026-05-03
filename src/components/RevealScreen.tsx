@@ -213,7 +213,7 @@ export function RevealScreen({
               fontFamily: 'var(--font-sans)',
               fontSize: '0.95rem',
               cursor: 'pointer',
-              minHeight: '48px',
+              height: '50px',
               transition: 'background 0.15s',
             }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--rose-light)'; }}
@@ -235,8 +235,10 @@ export function RevealScreen({
             borderRadius: '8px',
             cursor: 'pointer',
             boxShadow: 'var(--shadow-warm)',
-            minHeight: '56px',
+            height: '50px',
             transition: 'background 0.2s, transform 0.1s',
+            display: 'flex',
+            alignItems: 'center',
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--mauve-dark)'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--rose-deep)'; }}

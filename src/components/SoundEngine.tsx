@@ -1,134 +1,95 @@
 import { useRef, useCallback } from 'react';
 
-let sharedCtx: AudioContext | null = null;
-
-function getCtx(): AudioContext | null {
-  try {
-    if (!sharedCtx) {
-      sharedCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    }
-    return sharedCtx;
-  } catch {
-    return null;
-  }
-}
-
-function masterGain(ctx: AudioContext, volume: number): GainNode {
-  const g = ctx.createGain();
-  g.gain.value = (volume / 100) * 0.3;
-  g.connect(ctx.destination);
-  return g;
+function makeAudio(src: string, loop = false): HTMLAudioElement {
+  const a = new Audio(src);
+  a.loop = loop;
+  return a;
 }
 
 export interface SoundEngine {
-  questionReveal: () => void;
-  answerReveal: () => void;
-  scoreAwarded: () => void;
-  questionTransition: () => void;
-  finalFanfare: () => void;
+  playQuestion: () => void;
+  startProcess: () => void;
+  stopProcess: () => void;
+  playAnswer: () => void;
+  playScore: () => void;
+  playWinner: () => void;
 }
 
-export function useSoundEngine(volume: number): SoundEngine {
-  const volRef = useRef(volume);
-  volRef.current = volume;
+export function useSoundEngine(): SoundEngine {
+  const questionAudio = useRef<HTMLAudioElement | null>(null);
+  const processAudio = useRef<HTMLAudioElement | null>(null);
+  const answerAudio = useRef<HTMLAudioElement | null>(null);
+  const winnerAudio = useRef<HTMLAudioElement | null>(null);
+  const scoreAudio = useRef<HTMLAudioElement | null>(null);
 
-  const questionReveal = useCallback(() => {
-    try {
-      const ctx = getCtx();
-      if (!ctx) return;
-      const g = masterGain(ctx, volRef.current);
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(300, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.3);
-      const env = ctx.createGain();
-      env.gain.setValueAtTime(0.6, ctx.currentTime);
-      env.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
-      osc.connect(env);
-      env.connect(g);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.3);
-    } catch { /* silent */ }
+  function getQuestion() {
+    if (!questionAudio.current) questionAudio.current = makeAudio('/question.mp3');
+    return questionAudio.current;
+  }
+  function getProcess() {
+    if (!processAudio.current) processAudio.current = makeAudio('/process.mp3', true);
+    return processAudio.current;
+  }
+  function getAnswer() {
+    if (!answerAudio.current) answerAudio.current = makeAudio('/answer.mp3');
+    return answerAudio.current;
+  }
+  function getWinner() {
+    if (!winnerAudio.current) winnerAudio.current = makeAudio('/winner.mp3');
+    return winnerAudio.current;
+  }
+  function getScore() {
+    if (!scoreAudio.current) scoreAudio.current = makeAudio('/score.mp3');
+    return scoreAudio.current;
+  }
+
+  function stopAll() {
+    [questionAudio, processAudio, answerAudio, winnerAudio].forEach((ref) => {
+      if (ref.current) {
+        ref.current.pause();
+        ref.current.currentTime = 0;
+      }
+    });
+  }
+
+  const playQuestion = useCallback(() => {
+    stopAll();
+    const a = getQuestion();
+    a.currentTime = 0;
+    a.play().catch(() => { /* browser autoplay policy */ });
   }, []);
 
-  const answerReveal = useCallback(() => {
-    try {
-      const ctx = getCtx();
-      if (!ctx) return;
-      const g = masterGain(ctx, volRef.current);
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.value = 600;
-      const env = ctx.createGain();
-      env.gain.setValueAtTime(0.7, ctx.currentTime);
-      env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      osc.connect(env);
-      env.connect(g);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.15);
-    } catch { /* silent */ }
+  const startProcess = useCallback(() => {
+    const a = getProcess();
+    a.currentTime = 0;
+    a.play().catch(() => { /* browser autoplay policy */ });
   }, []);
 
-  const scoreAwarded = useCallback(() => {
-    try {
-      const ctx = getCtx();
-      if (!ctx) return;
-      const g = masterGain(ctx, volRef.current);
-      [400, 600].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        const env = ctx.createGain();
-        env.gain.setValueAtTime(0, ctx.currentTime);
-        env.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.02 + i * 0.01);
-        env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-        osc.connect(env);
-        env.connect(g);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.4);
-      });
-    } catch { /* silent */ }
+  const stopProcess = useCallback(() => {
+    const a = getProcess();
+    a.pause();
+    a.currentTime = 0;
   }, []);
 
-  const questionTransition = useCallback(() => {
-    try {
-      const ctx = getCtx();
-      if (!ctx) return;
-      const g = masterGain(ctx, volRef.current);
-      const osc = ctx.createOscillator();
-      osc.type = 'triangle';
-      osc.frequency.value = 880;
-      const env = ctx.createGain();
-      env.gain.setValueAtTime(0.5, ctx.currentTime);
-      env.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
-      osc.connect(env);
-      env.connect(g);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.6);
-    } catch { /* silent */ }
+  const playAnswer = useCallback(() => {
+    stopAll();
+    const a = getAnswer();
+    a.currentTime = 0;
+    a.play().catch(() => { /* browser autoplay policy */ });
   }, []);
 
-  const finalFanfare = useCallback(() => {
-    try {
-      const ctx = getCtx();
-      if (!ctx) return;
-      const g = masterGain(ctx, volRef.current);
-      // C4=261.63, E4=329.63, G4=392.00, C5=523.25
-      [261.63, 329.63, 392.0, 523.25].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        const env = ctx.createGain();
-        const t = ctx.currentTime + i * 0.1;
-        env.gain.setValueAtTime(0.5, t);
-        env.gain.linearRampToValueAtTime(0, t + 0.5);
-        osc.connect(env);
-        env.connect(g);
-        osc.start(t);
-        osc.stop(t + 0.5);
-      });
-    } catch { /* silent */ }
+  const playScore = useCallback(() => {
+    const a = getScore();
+    a.currentTime = 0;
+    a.play().catch(() => { /* browser autoplay policy */ });
   }, []);
 
-  return { questionReveal, answerReveal, scoreAwarded, questionTransition, finalFanfare };
+  const playWinner = useCallback(() => {
+    stopAll();
+    const a = getWinner();
+    a.currentTime = 0;
+    a.play().catch(() => { /* browser autoplay policy */ });
+  }, []);
+
+  return { playQuestion, startProcess, stopProcess, playAnswer, playScore, playWinner };
 }

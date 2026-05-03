@@ -32,109 +32,6 @@ function fisherYates(len: number): number[] {
   return arr;
 }
 
-function SettingsPanel({
-  volume,
-  muted,
-  onVolumeChange,
-  onMuteToggle,
-}: {
-  volume: number;
-  muted: boolean;
-  onVolumeChange: (v: number) => void;
-  onMuteToggle: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 1000 }}>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Settings"
-        style={{
-          background: 'var(--linen)',
-          border: '1.5px solid var(--rose-light)',
-          borderRadius: '50%',
-          width: '44px',
-          height: '44px',
-          cursor: 'pointer',
-          fontSize: '1.2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: 'var(--shadow-warm)',
-        }}
-      >
-        ⚙️
-      </button>
-      {open && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '52px',
-            right: 0,
-            background: 'var(--linen)',
-            border: '1.5px solid var(--rose-light)',
-            borderRadius: '12px',
-            padding: '1rem 1.25rem',
-            minWidth: '200px',
-            boxShadow: 'var(--shadow-warm)',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '0.85rem',
-              color: 'var(--brown-warm)',
-              marginBottom: '0.5rem',
-              fontWeight: 600,
-            }}
-          >
-            Volume
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <button
-              type="button"
-              onClick={onMuteToggle}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-                padding: '0.25rem',
-                minWidth: '32px',
-                minHeight: '32px',
-              }}
-              aria-label={muted ? 'Unmute' : 'Mute'}
-            >
-              {muted ? '🔇' : '🔊'}
-            </button>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={muted ? 0 : volume}
-              onChange={(e) => onVolumeChange(Number(e.target.value))}
-              style={{ flex: 1 }}
-              aria-label="Volume"
-            />
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.85rem',
-                color: 'var(--brown-warm)',
-                minWidth: '28px',
-              }}
-            >
-              {muted ? 0 : volume}
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function TriviaGame() {
   const [screen, setScreen] = useState<Screen>('splash');
   const [questionOrder, setQuestionOrder] = useState<number[]>([]);
@@ -145,12 +42,9 @@ function TriviaGame() {
   ]);
   const [showHint, setShowHint] = useState(false);
   const [scoreHistory, setScoreHistory] = useState<ScoreEvent[]>([]);
-  const [volume, setVolume] = useState(60);
-  const [muted, setMuted] = useState(false);
 
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const effectiveVolume = muted ? 0 : volume;
-  const sounds = useSoundEngine(effectiveVolume);
+  const sounds = useSoundEngine();
 
   useEffect(() => {
     return () => {
@@ -161,7 +55,7 @@ function TriviaGame() {
   const startHintTimer = useCallback(() => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     setShowHint(false);
-    hintTimerRef.current = setTimeout(() => setShowHint(true), 10_000);
+    hintTimerRef.current = setTimeout(() => setShowHint(true), 5_000);
   }, []);
 
   const handleStartGame = useCallback(() => {
@@ -175,7 +69,8 @@ function TriviaGame() {
       setCurrentIndex(0);
       setScoreHistory([]);
       setShowHint(false);
-      sounds.questionTransition();
+      sounds.playQuestion();
+      sounds.startProcess();
       setScreen('question');
       startHintTimer();
     },
@@ -184,13 +79,13 @@ function TriviaGame() {
 
   const handleReveal = useCallback(() => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    sounds.answerReveal();
+    sounds.playAnswer();
     setScreen('reveal');
   }, [sounds]);
 
   const handleScore = useCallback(
     (teamIndex: number) => {
-      sounds.scoreAwarded();
+      sounds.playScore();
       setTeams((prev) =>
         prev.map((t, i) => (i === teamIndex ? { ...t, score: t.score + 100 } : t))
       );
@@ -215,12 +110,13 @@ function TriviaGame() {
   const handleNextQuestion = useCallback(() => {
     const nextIndex = currentIndex + 1;
     if (nextIndex >= ALL_QUESTIONS.length) {
-      sounds.finalFanfare();
+      sounds.playWinner();
       setScreen('scoreboard');
     } else {
-      sounds.questionTransition();
       setCurrentIndex(nextIndex);
       setShowHint(false);
+      sounds.playQuestion();
+      sounds.startProcess();
       setScreen('question');
       startHintTimer();
     }
@@ -242,13 +138,6 @@ function TriviaGame() {
 
   return (
     <>
-      <SettingsPanel
-        volume={volume}
-        muted={muted}
-        onVolumeChange={setVolume}
-        onMuteToggle={() => setMuted((m) => !m)}
-      />
-
       {screen === 'splash' && (
         <SplashScreen onStart={handleStartGame} onSetupTeams={handleStartGame} />
       )}
