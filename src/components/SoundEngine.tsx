@@ -7,6 +7,7 @@ function makeAudio(src: string, loop = false): HTMLAudioElement {
 }
 
 export interface SoundEngine {
+  playHoaHoa: () => void;
   playQuestion: () => void;
   startProcess: () => void;
   stopProcess: () => void;
@@ -21,6 +22,7 @@ export function useSoundEngine(): SoundEngine {
   const answerAudio = useRef<HTMLAudioElement | null>(null);
   const winnerAudio = useRef<HTMLAudioElement | null>(null);
   const scoreAudio = useRef<HTMLAudioElement | null>(null);
+  const hoaHoaAudio = useRef<HTMLAudioElement | null>(null);
 
   function getQuestion() {
     if (!questionAudio.current) questionAudio.current = makeAudio('/question.mp3');
@@ -42,6 +44,10 @@ export function useSoundEngine(): SoundEngine {
     if (!scoreAudio.current) scoreAudio.current = makeAudio('/score.mp3');
     return scoreAudio.current;
   }
+  function getHoaHoa() {
+    if (!hoaHoaAudio.current) hoaHoaAudio.current = makeAudio('/hoa-hoa.mp3');
+    return hoaHoaAudio.current;
+  }
 
   function stopAll() {
     [questionAudio, processAudio, answerAudio, winnerAudio].forEach((ref) => {
@@ -51,6 +57,12 @@ export function useSoundEngine(): SoundEngine {
       }
     });
   }
+
+  const playHoaHoa = useCallback(() => {
+    const a = getHoaHoa();
+    a.currentTime = 0;
+    a.play().catch(() => { /* browser autoplay policy */ });
+  }, []);
 
   const playQuestion = useCallback(() => {
     stopAll();
@@ -91,5 +103,5 @@ export function useSoundEngine(): SoundEngine {
     a.play().catch(() => { /* browser autoplay policy */ });
   }, []);
 
-  return { playQuestion, startProcess, stopProcess, playAnswer, playScore, playWinner };
+  return { playHoaHoa, playQuestion, startProcess, stopProcess, playAnswer, playScore, playWinner };
 }

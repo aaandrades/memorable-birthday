@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
+
 interface Props {
   onStart: () => void;
   onSetupTeams: () => void;
+  onMount: () => void;
 }
 
 const botanicalStyle = (
@@ -76,7 +79,80 @@ function Petal({ style }: { style: React.CSSProperties }) {
   );
 }
 
-export function SplashScreen({ onStart, onSetupTeams }: Props) {
+// left%, delay, duration, rx (half-width), ry (half-height), color, opacity
+const PETAL_CONFIGS: [string, string, string, number, number, string, number][] = [
+  ['3%',  '0s',   '5.2s', 6,  6,  'var(--rose-light)', 0.8],
+  ['8%',  '1.2s', '7s',   4,  11, 'var(--sage)',        0.7],
+  ['14%', '0.4s', '6s',   7,  7,  'var(--rose-mid)',    0.75],
+  ['20%', '2.1s', '5.5s', 5,  5,  'var(--rose-light)', 0.8],
+  ['26%', '0.7s', '8s',   3,  10, 'var(--sage-light)', 0.65],
+  ['33%', '1.8s', '6s',   8,  8,  'var(--rose-mid)',   0.7],
+  ['39%', '3s',   '7.5s', 4,  4,  'var(--rose-light)', 0.85],
+  ['45%', '0.3s', '5s',   4,  12, 'var(--sage)',        0.6],
+  ['51%', '2.5s', '6.5s', 6,  6,  'var(--rose-deep)',  0.55],
+  ['57%', '1s',   '4.5s', 4,  4,  'var(--rose-light)', 0.8],
+  ['63%', '3.8s', '7s',   3,  9,  'var(--sage)',        0.7],
+  ['69%', '0.6s', '5.5s', 7,  7,  'var(--rose-mid)',   0.75],
+  ['75%', '2s',   '6s',   4,  4,  'var(--rose-light)', 0.8],
+  ['81%', '4.2s', '8s',   4,  11, 'var(--sage-light)', 0.65],
+  ['87%', '1.4s', '5s',   5,  5,  'var(--rose-mid)',   0.75],
+  ['93%', '0.9s', '7.5s', 4,  4,  'var(--rose-light)', 0.8],
+  ['10%', '4s',   '6s',   6,  6,  'var(--sage)',        0.6],
+  ['22%', '5.5s', '5s',   4,  10, 'var(--rose-deep)',  0.5],
+  ['35%', '4.7s', '7s',   6,  6,  'var(--rose-light)', 0.8],
+  ['48%', '6s',   '5.5s', 3,  9,  'var(--sage)',        0.65],
+  ['60%', '5s',   '6.5s', 6,  6,  'var(--rose-mid)',   0.7],
+  ['72%', '3.5s', '4s',   4,  4,  'var(--rose-light)', 0.85],
+  ['84%', '6.5s', '7s',   4,  10, 'var(--sage-light)', 0.6],
+  ['17%', '7s',   '5s',   5,  5,  'var(--rose-mid)',   0.75],
+  ['54%', '7.5s', '6s',   6,  6,  'var(--rose-light)', 0.8],
+];
+
+function FallingPetals() {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
+      aria-hidden="true"
+    >
+      {PETAL_CONFIGS.map(([left, delay, dur, rx, ry, color, opacity], i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            top: '-4%',
+            left,
+            animation: `petalFall ${dur} ease-in ${delay} infinite`,
+          }}
+        >
+          <svg
+            width={rx * 2 + 2}
+            height={ry * 2 + 2}
+            viewBox={`0 0 ${rx * 2 + 2} ${ry * 2 + 2}`}
+          >
+            <ellipse
+              cx={rx + 1}
+              cy={ry + 1}
+              rx={rx}
+              ry={ry}
+              fill={color}
+              opacity={opacity}
+            />
+          </svg>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SplashScreen({ onStart, onSetupTeams, onMount }: Props) {
+  useEffect(() => { onMount(); }, []);
+
   return (
     <div
       style={{
@@ -90,6 +166,8 @@ export function SplashScreen({ onStart, onSetupTeams }: Props) {
         padding: '2rem',
       }}
     >
+      <FallingPetals />
+
       {/* Botanical decorations */}
       <Fern style={botanicalStyle('left', '10%', '0.2s', '-10deg')} />
       <Fern style={botanicalStyle('right', '15%', '0.4s', '10deg')} />
@@ -116,7 +194,7 @@ export function SplashScreen({ onStart, onSetupTeams }: Props) {
             color: 'var(--rose-deep)',
             lineHeight: 1,
             letterSpacing: '-0.02em',
-            animation: 'gentlePulse 4s ease-in-out infinite',
+            animation: 'gentlePulse 2s ease-in-out infinite',
             textShadow: '0 8px 32px rgba(139,90,106,0.2)',
           }}
           aria-label="30"

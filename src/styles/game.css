@@ -89,7 +89,7 @@ body {
 /* Splash title pulse */
 @keyframes gentlePulse {
   0%, 100% { opacity: 1;   transform: scale(1);    }
-  50%       { opacity: 0.9; transform: scale(1.02); }
+  50%       { opacity: 0.9; transform: scale(1.05); }
 }
 
 /* Petal fall (confetti alternative) */

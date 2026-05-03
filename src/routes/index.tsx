@@ -151,7 +151,11 @@ function TriviaGame() {
   return (
     <>
       {screen === 'splash' && (
-        <SplashScreen onStart={handleStartGame} onSetupTeams={handleStartGame} />
+        <SplashScreen
+          onStart={handleStartGame}
+          onSetupTeams={handleStartGame}
+          onMount={() => sounds.playHoaHoa()}
+        />
       )}
 
       {screen === 'teamsetup' && (
