@@ -42,7 +42,7 @@ export const ALL_QUESTIONS: Question[] = [
   },
   {
     id: 4,
-    imageSrc: "/images/4.jpeg",
+    imageSrc: "/images/4new.jpg",
     imageAlt: "Photo for question 4",
     question: "Mucha de nuestras mascotas tiene segundo nombre, ¿Cuál es el segundo nombre de Isis o de Morgan?",
     answer: "Eduardo y Marisel",
